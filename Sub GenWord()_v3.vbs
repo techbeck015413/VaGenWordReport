@@ -5,18 +5,21 @@ Function InitializeWordApp() As Object
     Set InitializeWordApp = WordApp
 End Function
 
-Function AddParagraphToWord(ByRef WordDoc As Object, ByVal vaName As String, ByVal hostList As String, ByRef vaDescript As String, vaSolution As String) As Boolean
+Function AddParagraphToWord(ByRef WordDoc As Object, ByVal vaName As String, ByVal hostList As String, ByRef vaDescript As String, ByRef vaSolution As String) As Boolean
     Dim para As Object
     If vaName <> "" And hostList <> "" Then
         Set para = WordDoc.Content.Paragraphs.Add
-        para.Range.text = "漏洞名稱： " & vaName & vbCrLf & "漏洞來源：" & hostList & vbCrLf & "漏洞敘述：" & vaDescript & vbCrLf & "修補建議：" & vbCrLf & vaSolution & vbCrLf
+        
+        
+        
+        para.Range.text = "漏洞名稱： " & vaName & vbCrLf & "漏洞來源：" & hostList & vbCrLf & "漏洞敘述：" & vbCrLf & vaDescript & vbCrLf & "修補建議：" & vbCrLf & vaSolution & vbCrLf & vbCrLf
         AddParagraphToWord = True
     Else
         AddParagraphToWord = False
     End If
 End Function
 
-Sub ProcessExcelData(ByRef Worksheet As Object, ByVal lastRow As Long, ByRef vaName As String, ByRef hostList As String, ByRef vaDescript As String, vaSolution As String, ByRef WordDoc As Object)
+Sub ProcessExcelData(ByRef Worksheet As Object, ByVal lastRow As Long, ByRef vaName As String, ByRef hostList As String, ByRef vaDescript As String, ByRef vaSolution As String, ByRef WordDoc As Object)
     ' 由於我們需要操作 Word 文檔，我們將 WordDoc 作為參數傳遞給 ProcessExcelData
     Dim cellValue As String, i As Long
     For i = 1 To lastRow
@@ -24,12 +27,20 @@ Sub ProcessExcelData(ByRef Worksheet As Object, ByVal lastRow As Long, ByRef vaN
         If Not IsNumeric(Left(cellValue, 1)) And cellValue <> "" Then
             If vaName <> "" And hostList <> "" Then
                 ' 確保 AddParagraphToWord 能夠接收 WordDoc 參數
+                
+                ' 在這裡調用 AddParagraphToWord 之前設定預覽描述和解決方式
+                vaDescript = "[預覽描述1]"
+                vaSolution = "[預覽解決方式1]"
+                
                 If Not AddParagraphToWord(WordDoc, vaName, hostList, vaDescript, vaSolution) Then
                     MsgBox "無法將內容添加到 Word 文檔。"
                 End If
             End If
             vaName = cellValue
             hostList = ""
+            ' 再次設定預覽描述和解決方式為預設值
+            vaDescript = "[預覽描述2]"
+            vaSolution = "[預覽解決方式2]"
         ElseIf IsNumeric(Left(cellValue, 1)) And cellValue <> "" Then
             If Len(hostList) > 0 Then
                 hostList = hostList & "、"
@@ -39,11 +50,17 @@ Sub ProcessExcelData(ByRef Worksheet As Object, ByVal lastRow As Long, ByRef vaN
     Next i
     ' 確保最後一次循環的數據也被添加到 Word 文檔
     If vaName <> "" And hostList <> "" Then
+            ' 再次設定預覽描述和解決方式為預設值
+            vaDescript = "[預覽描述3]"
+            vaSolution = "[預覽解決方式3]"
+            
         If Not AddParagraphToWord(WordDoc, vaName, hostList, vaDescript, vaSolution) Then
             MsgBox "無法將最後一個漏洞名稱和主機IP列表添加到 Word 文檔。"
         End If
     End If
 End Sub
+
+
 
 Sub MainGenWord()
     Dim ExcelApp As Object, Workbook As Object, Worksheet As Object
@@ -99,4 +116,5 @@ Function GetExistingExcelApp() As Object
         End
     End If
 End Function
+
 
