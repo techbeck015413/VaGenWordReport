@@ -174,13 +174,13 @@ Function ProcessVaDescript(htmlDoc As MSHTML.HTMLDocument) As String
             If h4Element.ClassName = "border-bottom pb-1" And h4Element.innerText = "Description" Then
                 ' 找到了Description標題，接下來將提取所有SPAN元素的文本
                 For Each spanElement In sectionElement.getElementsByTagName("span")
-                    descriptionText = descriptionText & spanElement.innerText & vbCrLf
+                    descriptionText = descriptionText & spanElement.innerText
                 Next spanElement
                 Exit For ' 已經找到並處理了相應的<section>，跳出循環
+                descriptionText = descriptionTex & vbCrLf
             End If
         Next h4Element
     Next sectionElement
-
     ProcessVaDescript = Trim(descriptionText) ' 移除最後的換行符號
 End Function
 
@@ -188,20 +188,32 @@ End Function
 
 ' 處理修補建議的函式
 Function ProcessVaSolution(htmlDoc As MSHTML.HTMLDocument) As String
-    ' TODO: 在這裡實現從htmlDoc中提取修補建議的邏輯
-    ' 以下僅為示例
-    Dim vaSolution As String
-    Dim solutionElement As MSHTML.IHTMLElement
-    
-    ' 假設修補建議在某個特定的元素中，例如一個帶有特定id的元素
-    Set solutionElement = htmlDoc.getElementById("solutionId")
-    If Not solutionElement Is Nothing Then
-        vaSolution = solutionElement.innerText
-    Else
-        vaSolution = "修補建議信息未找到。"
-    End If
+    Dim sectionElements As MSHTML.IHTMLElementCollection
+    Dim sectionElement As MSHTML.IHTMLElement
+    Dim descriptionText As String
+    Dim spanElement As MSHTML.IHTMLElement
 
-    ProcessVaSolution = vaSolution
+    descriptionText = ""
+
+    ' 尋找所有的<section>元素
+    Set sectionElements = htmlDoc.getElementsByTagName("section")
+
+    ' 遍歷所有<section>元素
+    For Each sectionElement In sectionElements
+        ' 檢查<section>元素是否包含一個<h4>子元素，且其文本為"Description"
+        Dim h4Element As MSHTML.IHTMLElement
+        For Each h4Element In sectionElement.getElementsByTagName("h4")
+            If h4Element.ClassName = "border-bottom pb-1" And h4Element.innerText = "Solution" Then
+                ' 找到了Solution標題，接下來將提取所有SPAN元素的文本
+                For Each spanElement In sectionElement.getElementsByTagName("span")
+                    descriptionText = descriptionText & spanElement.innerText
+                Next spanElement
+                Exit For ' 已經找到並處理了相應的<section>，跳出循環
+                descriptionText = descriptionTex & vbCrLf
+            End If
+        Next h4Element
+    Next sectionElement
+    ProcessVaDescript = Trim(descriptionText) ' 移除最後的換行符號
 End Function
 
 
