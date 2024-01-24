@@ -160,6 +160,7 @@ Function ProcessVaDescript(htmlDoc As MSHTML.HTMLDocument) As String
     Dim sectionElement As MSHTML.IHTMLElement
     Dim descriptionText As String
     Dim spanElement As MSHTML.IHTMLElement
+    Dim titleText As String
 
     descriptionText = ""
 
@@ -168,21 +169,25 @@ Function ProcessVaDescript(htmlDoc As MSHTML.HTMLDocument) As String
 
     ' 遍歷所有<section>元素
     For Each sectionElement In sectionElements
-        ' 檢查<section>元素是否包含一個<h4>子元素，且其文本為"Description"
+        ' 檢查<section>元素是否包含一個<h4>子元素，且其文本為"Description"或"說明"
         Dim h4Element As MSHTML.IHTMLElement
         For Each h4Element In sectionElement.getElementsByTagName("h4")
-            If h4Element.ClassName = "border-bottom pb-1" And h4Element.innerText = "Description" Then
-                ' 找到了Description標題，接下來將提取所有SPAN元素的文本
+            titleText = h4Element.innerText
+            If h4Element.ClassName = "border-bottom pb-1" And (titleText = "Description" Or titleText = "說明") Then
+                ' 找到了Description或說明標題，接下來將提取所有SPAN元素的文本
                 For Each spanElement In sectionElement.getElementsByTagName("span")
                     descriptionText = descriptionText & spanElement.innerText
                 Next spanElement
+                ' 添加一個段落間隔
+                descriptionText = descriptionText & vbCrLf
                 Exit For ' 已經找到並處理了相應的<section>，跳出循環
-                descriptionText = descriptionTex & vbCrLf
             End If
         Next h4Element
     Next sectionElement
+
     ProcessVaDescript = Trim(descriptionText) ' 移除最後的換行符號
 End Function
+
 
 
 
@@ -190,31 +195,34 @@ End Function
 Function ProcessVaSolution(htmlDoc As MSHTML.HTMLDocument) As String
     Dim sectionElements As MSHTML.IHTMLElementCollection
     Dim sectionElement As MSHTML.IHTMLElement
-    Dim descriptionText As String
+    Dim solutionText As String
     Dim spanElement As MSHTML.IHTMLElement
+    Dim titleText As String
 
-    descriptionText = ""
+    solutionText = "" ' 修正變數名稱
 
     ' 尋找所有的<section>元素
     Set sectionElements = htmlDoc.getElementsByTagName("section")
 
     ' 遍歷所有<section>元素
     For Each sectionElement In sectionElements
-        ' 檢查<section>元素是否包含一個<h4>子元素，且其文本為"Description"
+        ' 檢查<section>元素是否包含一個<h4>子元素，且其文本為"Solution"或"解決方案"
         Dim h4Element As MSHTML.IHTMLElement
         For Each h4Element In sectionElement.getElementsByTagName("h4")
-            If h4Element.ClassName = "border-bottom pb-1" And h4Element.innerText = "Solution" Then
-                ' 找到了Solution標題，接下來將提取所有SPAN元素的文本
+            titleText = h4Element.innerText ' 獲取標題文本
+            If h4Element.ClassName = "border-bottom pb-1" And (titleText = "Solution" Or titleText = "解決方案") Then
+                ' 找到了Solution或解決方案標題，接下來將提取所有SPAN元素的文本
                 For Each spanElement In sectionElement.getElementsByTagName("span")
-                    descriptionText = descriptionText & spanElement.innerText
+                    solutionText = solutionText & spanElement.innerText
                 Next spanElement
+                solutionText = solutionText & vbCrLf ' 添加段落間隔
                 Exit For ' 已經找到並處理了相應的<section>，跳出循環
-                descriptionText = descriptionTex & vbCrLf
             End If
         Next h4Element
     Next sectionElement
-    ProcessVaDescript = Trim(descriptionText) ' 移除最後的換行符號
+    ProcessVaSolution = Trim(solutionText) ' 移除最後的換行符號
 End Function
+
 
 
 
