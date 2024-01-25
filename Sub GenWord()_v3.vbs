@@ -138,22 +138,25 @@ Function SearchVaName(vaName As String) As MSHTML.HTMLDocument
     Set SearchVaName = htmlDoc
     Set httpRequest = Nothing
 End Function
-Function URLEncode(str As String) As String
-    Dim reservedChars As String
+Function URLEncode(ByVal str As String) As String
     Dim i As Integer
-    Dim ch As String
-    URLEncode = ""
-    reservedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~"
-
+    Dim result As String
+    result = ""
+    
     For i = 1 To Len(str)
+        Dim ch As String
         ch = Mid(str, i, 1)
-        If InStr(reservedChars, ch) <> 0 Then
-            URLEncode = URLEncode & ch
+        If (ch Like "[A-Za-z0-9]") Then
+            result = result & ch
         Else
-            URLEncode = URLEncode & "%" & Right("0" & Hex(Asc(ch)), 2)
+            result = result & "%" & Right("0" & Hex(AscW(ch)), 2)
         End If
-    Next
+    Next i
+    
+    URLEncode = result
 End Function
+
+
 
 Function ProcessVaDescript(htmlDoc As MSHTML.HTMLDocument) As String
     Dim sectionElements As MSHTML.IHTMLElementCollection
@@ -184,8 +187,11 @@ Function ProcessVaDescript(htmlDoc As MSHTML.HTMLDocument) As String
             End If
         Next h4Element
     Next sectionElement
+    
+    '翻譯descriptionText
+    descriptionText = TranslateText(descriptionText, "zh-TW")
     descriptionText = Replace(descriptionText, " - ", vbCrLf & " - ") ' 在 " - " 前面新增換行符號
-    descriptionText = Replace(descriptionText, "Note that", vbCrLf & "Note that") ' 在 " - " 前面新增換行符號
+    descriptionText = Replace(descriptionText, "請注意，", vbCrLf & "請注意，") ' 在 " - " 前面新增換行符號
     ProcessVaDescript = Trim(descriptionText) ' 移除最後的換行符號
 End Function
 
@@ -221,6 +227,7 @@ Function ProcessVaSolution(htmlDoc As MSHTML.HTMLDocument) As String
             End If
         Next h4Element
     Next sectionElement
+    solutionText = TranslateText(solutionText, "zh-TW")
     ProcessVaSolution = Trim(solutionText) ' 移除最後的換行符號
 End Function
 
@@ -229,6 +236,52 @@ End Function
 
 '翻譯功能(還未添加)
 ' ... 如果您未來有添加翻譯功能的代碼，可以在這裡加入 ...
+Function TranslateText(ByVal text As String, ByVal targetLanguage As String) As String
+    Dim URL As String
+    Dim objHTTP As Object
+    Dim response As String
+    Dim json As Object
+    Dim errorMsg As String
+
+    ' 定義您的 Google Translate API 金鑰
+    Dim apiKey As String
+    apiKey = "AIzaSyASb0YQ1eBsXHPVRuee7hTwKDHj9V0SBnc"
+
+    On Error GoTo ErrorHandler
+    ' Google 翻譯 API 的 URL
+    URL = "https://translation.googleapis.com/language/translate/v2?q=" & _
+          URLEncode(text) & "&target=" & targetLanguage & "&key=" & apiKey
+
+    Set objHTTP = CreateObject("MSXML2.XMLHTTP")
+    objHTTP.Open "GET", URL, False
+    objHTTP.Send
+
+    ' 檢查 HTTP 請求是否成功
+    If objHTTP.Status = 200 Then
+        response = objHTTP.responseText
+        Set json = JsonConverter.ParseJson(response)
+        TranslateText = json("data")("translations")(1)("translatedText")
+    Else
+        errorMsg = "Error " & objHTTP.Status & " - " & objHTTP.statusText
+        TranslateText = ""
+    End If
+
+    GoTo CleanUp
+
+ErrorHandler:
+    errorMsg = "HTTP Request Error: " & Err.Description
+    TranslateText = ""
+    ' 使用 MsgBox 顯示錯誤信息
+    MsgBox errorMsg
+    Resume CleanUp
+
+CleanUp:
+    Set objHTTP = Nothing
+End Function
+
+
+
+
 
 
 
