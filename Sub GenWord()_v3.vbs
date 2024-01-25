@@ -179,12 +179,13 @@ Function ProcessVaDescript(htmlDoc As MSHTML.HTMLDocument) As String
                     descriptionText = descriptionText & spanElement.innerText
                 Next spanElement
                 ' 添加一個段落間隔
-                descriptionText = descriptionText & vbCrLf
+                ' descriptionText = descriptionText & vbCrLf
                 Exit For ' 已經找到並處理了相應的<section>，跳出循環
             End If
         Next h4Element
     Next sectionElement
-
+    descriptionText = Replace(descriptionText, " - ", vbCrLf & " - ") ' 在 " - " 前面新增換行符號
+    descriptionText = Replace(descriptionText, "Note that", vbCrLf & "Note that") ' 在 " - " 前面新增換行符號
     ProcessVaDescript = Trim(descriptionText) ' 移除最後的換行符號
 End Function
 
@@ -215,7 +216,7 @@ Function ProcessVaSolution(htmlDoc As MSHTML.HTMLDocument) As String
                 For Each spanElement In sectionElement.getElementsByTagName("span")
                     solutionText = solutionText & spanElement.innerText
                 Next spanElement
-                solutionText = solutionText & vbCrLf ' 添加段落間隔
+                ' solutionText = solutionText & vbCrLf ' 添加段落間隔
                 Exit For ' 已經找到並處理了相應的<section>，跳出循環
             End If
         Next h4Element
