@@ -118,7 +118,7 @@ Function SearchVaName(vaName As String) As MSHTML.HTMLDocument
         Set json = JsonConverter.ParseJson(searchResult)
         firstResultUrl = json("items")(1)("link")
     Else
-        MsgBox "Error: " & httpRequest.Status & " - " & httpRequest.statusText
+        'MsgBox "Error: " & httpRequest.Status & " - " & httpRequest.statusText
         Exit Function
     End If
 
@@ -131,8 +131,8 @@ Function SearchVaName(vaName As String) As MSHTML.HTMLDocument
     If httpRequest.Status = 200 Then
         ' 將獲取的HTML設置為HTMLDocument的內容
         htmlDoc.body.innerHTML = httpRequest.responseText
-    Else
-        MsgBox "Error: " & httpRequest.Status & " - " & httpRequest.statusText
+    'Else
+        'MsgBox "Error: " & httpRequest.Status & " - " & httpRequest.statusText
     End If
 
     Set SearchVaName = htmlDoc
@@ -231,11 +231,7 @@ Function ProcessVaSolution(htmlDoc As MSHTML.HTMLDocument) As String
     ProcessVaSolution = Trim(solutionText) ' 移除最後的換行符號
 End Function
 
-
-
-
-'翻譯功能(還未添加)
-' ... 如果您未來有添加翻譯功能的代碼，可以在這裡加入 ...
+'翻譯功能
 Function TranslateText(ByVal text As String, ByVal targetLanguage As String) As String
     Dim URL As String
     Dim objHTTP As Object
@@ -272,16 +268,12 @@ ErrorHandler:
     errorMsg = "HTTP Request Error: " & Err.Description
     TranslateText = ""
     ' 使用 MsgBox 顯示錯誤信息
-    MsgBox errorMsg
+    ' MsgBox errorMsg
     Resume CleanUp
 
 CleanUp:
     Set objHTTP = Nothing
 End Function
-
-
-
-
 
 
 
