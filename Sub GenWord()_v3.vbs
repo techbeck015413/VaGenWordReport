@@ -40,26 +40,35 @@ Sub MainGenWord()
 
     For i = 1 To lastRow
         cellValue = Worksheet.Cells(i, 1).Value
-        If Not IsNumeric(Left(cellValue, 1)) And cellValue <> "" Then
-            If vaName <> "" And hostList <> "" Then
-                Set searchResult = SearchVaName(vaName)
-                vaDescript = ProcessVaDescript(searchResult)
-                vaSolution = ProcessVaSolution(searchResult)
+        
+        ' 檢查是否為特定的標記
+        Select Case cellValue
+            Case "Critical", "High", "Medium", "Low"
+                ' 如果是特定的標記，則插入到Word文檔中
+                WordDoc.Content.Paragraphs.Add.Range.text = cellValue & vbCrLf & vbCrLf
+            Case Else
+                ' 其他處理保持不變
+                If Not IsNumeric(Left(cellValue, 1)) And cellValue <> "" Then
+                    If vaName <> "" And hostList <> "" Then
+                        Set searchResult = SearchVaName(vaName)
+                        vaDescript = ProcessVaDescript(searchResult)
+                        vaSolution = ProcessVaSolution(searchResult)
     
-                If Not AddParagraphToWord(WordDoc, vaName, hostList, vaDescript, vaSolution) Then
-                    MsgBox "無法將內容添加到 Word 文檔。"
+                        If Not AddParagraphToWord(WordDoc, vaName, hostList, vaDescript, vaSolution) Then
+                            MsgBox "無法將內容添加到 Word 文檔。"
+                        End If
+                    End If
+                vaName = cellValue
+                hostList = ""
+                vaDescript = "[預覽描述2]"
+                vaSolution = "[預覽解決方式2]"
+                ElseIf IsNumeric(Left(cellValue, 1)) And cellValue <> "" Then
+                    If Len(hostList) > 0 Then
+                    hostList = hostList & "、"
                 End If
+                hostList = hostList & cellValue
             End If
-            vaName = cellValue
-            hostList = ""
-            vaDescript = "[預覽描述2]"
-            vaSolution = "[預覽解決方式2]"
-        ElseIf IsNumeric(Left(cellValue, 1)) And cellValue <> "" Then
-            If Len(hostList) > 0 Then
-                hostList = hostList & "、"
-            End If
-            hostList = hostList & cellValue
-        End If
+        End Select
     Next i
 
     If vaName <> "" And hostList <> "" Then
