@@ -45,7 +45,10 @@ Sub MainGenWord()
         Select Case cellValue
             Case "Critical", "High", "Medium", "Low"
                 ' 如果是特定的標記，則插入到Word文檔中
-                WordDoc.Content.Paragraphs.Add.Range.text = cellValue & vbCrLf & vbCrLf
+                With WordDoc.Content.Paragraphs.Add.Range
+                    .text = cellValue & vbCrLf & vbCrLf
+                    .Font.Bold = True ' 設定為粗體
+                End With
             Case Else
                 ' 其他處理保持不變
                 If Not IsNumeric(Left(cellValue, 1)) And cellValue <> "" Then
@@ -283,6 +286,3 @@ ErrorHandler:
 CleanUp:
     Set objHTTP = Nothing
 End Function
-
-
-
