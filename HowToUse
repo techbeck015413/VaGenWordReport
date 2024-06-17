@@ -3,6 +3,11 @@ How to use
 1. open the VB script in Excel.
 2.  import the vbs code with module.
 3. import the JsonConverter.bas in the project.
+4. check the import dll in vbs ide env. 
 4. check the table name in code.
 5. check the api key in code.(2 place)
 6. excute the code.
+
+If you cant find Microsoft Form 2.0 when you try check the dll, download the dll in the web, and import it.
+Download Link:
+https://www.dll-files.com/download/e90c291997deaa27b33a03b64bc8bd88/fm20.dll.html?c=dG9CaHV5N1FYUUx5SU5yQVdoTVlqZz09
