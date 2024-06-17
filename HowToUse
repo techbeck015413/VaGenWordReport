@@ -1,0 +1,8 @@
+How to use
+
+1. open the VB script in Excel.
+2.  import the vbs code with module.
+3. import the JsonConverter.bas in the project.
+4. check the table name in code.
+5. check the api key in code.(2 place)
+6. excute the code.
