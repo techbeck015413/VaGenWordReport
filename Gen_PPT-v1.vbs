@@ -82,10 +82,13 @@ Sub Gen_PPT()
             Set pptSlide = pptPres.Slides.Add(slideIndex, ppLayoutText)
             
             ' 在投影片中新增文字框並填入標題
-            pptSlide.Shapes.title.TextFrame.TextRange.text = vaName
+            pptSlide.Shapes.Title.TextFrame.TextRange.text = vaName
+            
+            ' 設定標題的字體大小
+            pptSlide.Shapes.Title.TextFrame.TextRange.Font.Size = 28  ' 你可以將24替換成你需要的字體大小
             
             ' 確保標題沒有項目符號
-            pptSlide.Shapes.title.TextFrame.TextRange.ParagraphFormat.Bullet.Visible = msoFalse
+            pptSlide.Shapes.Title.TextFrame.TextRange.ParagraphFormat.Bullet.Visible = msoFalse
             
             If vaName = "Critical" Or vaName = "High" Or vaName = "Medium" Or vaName = "Low" Then
                 ' 如果標題是這些，則跳過創建 pptSlide.Shapes(2)
@@ -101,9 +104,9 @@ Sub Gen_PPT()
             ' 確保主要內容沒有項目符號
             pptSlide.Shapes(2).TextFrame.TextRange.ParagraphFormat.Bullet.Visible = msoFalse
             
-            ' 設置字體大小為 14
+            ' 設置字體大小為 16
             With pptSlide.Shapes(2).TextFrame.TextRange
-                .Font.Size = 14
+                .Font.Size = 16
             End With
             
             ' 從當前行開始，檢查下面的行是否為 IP 地址
@@ -266,6 +269,27 @@ Function ProcessSearchResult(htmlDoc As HTMLDocument, nessusUrl As String) As St
 
     ' 清理並翻譯 descript_str
     descript_str = CleanString(descript_str)
+    
+    
+    
+    ' 定義需要檢查和移除的目標字串
+    Dim targetStrings As Variant
+    targetStrings = Array( _
+        "Note that Nessus has not tested for this issue but has instead relied only on the application's self-reported version number.", _
+        "Note that Nessus has not tested for these issues but has instead relied only on the application's self-reported version number.", _
+        "Nessus has not tested for these issues but has instead relied only on the application's self-reported version number.", _
+        "Note that ", _
+        "It is, therefore, " _
+    )
+
+    ' 迴圈檢查並移除目標字串
+    Dim i As Integer
+    For i = LBound(targetStrings) To UBound(targetStrings)
+        If InStr(descript_str, targetStrings(i)) > 0 Then
+            descript_str = Replace(descript_str, targetStrings(i), "")
+        End If
+    Next i
+    
     If IsEnglish(descript_str) Then
         descript_str = TranslateText(descript_str, "zh-TW", ErrorMessage)
         If ErrorMessage <> "" Then
@@ -290,6 +314,14 @@ Function ProcessSearchResult(htmlDoc As HTMLDocument, nessusUrl As String) As St
     
     descript_str = Replace(descript_str, "請注意，", vbCrLf & "請注意，")
     solution_str = Replace(solution_str, "請注意，", vbCrLf & "請注意，")
+    
+    ' 判斷 descript_str 是否超過指定長度，若超過則截取
+    Dim maxLength As Integer
+    maxLength = 1500  ' 設定你希望的最大字數
+
+    If Len(descript_str) > maxLength Then
+    descript_str = Left(descript_str, maxLength) & "..."
+    End If
     
     ' 組合文字
     Dim additionalText As String
@@ -415,4 +447,5 @@ Function CleanString(str As String) As String
 
     CleanString = cleanedStr
 End Function
+
 
