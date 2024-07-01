@@ -174,6 +174,16 @@ Function GetSearchResultHtml(query As String, ByRef nessusUrl As String) As HTML
         
         If jsonResponse("items").Count > 0 Then
             firstResultUrl = jsonResponse("items")(1)("link")
+
+            ' 判斷URL是否包含指定的子字串
+            If InStr(firstResultUrl, "/changelog") > 0 Then
+                firstResultUrl = Left(firstResultUrl, InStr(firstResultUrl, "/changelog") - 1)
+            ElseIf InStr(firstResultUrl, "/dependencies") > 0 Then
+                firstResultUrl = Left(firstResultUrl, InStr(firstResultUrl, "/dependencies") - 1)
+            ElseIf InStr(firstResultUrl, "/dependents") > 0 Then
+                firstResultUrl = Left(firstResultUrl, InStr(firstResultUrl, "/dependents") - 1)
+            End If
+    
             nessusUrl = firstResultUrl  ' 在這裡更新 nessusUrl 為第一個搜索結果的URL
             
             ' 使用新的HTTP請求來獲取第一個搜索結果的網頁內容
