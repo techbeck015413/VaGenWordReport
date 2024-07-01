@@ -317,7 +317,7 @@ Function ProcessSearchResult(htmlDoc As HTMLDocument, nessusUrl As String) As St
     
     ' 判斷 descript_str 是否超過指定長度，若超過則截取
     Dim maxLength As Integer
-    maxLength = 1500  ' 設定你希望的最大字數
+    maxLength = 3000  ' 設定你希望的最大字數
 
     If Len(descript_str) > maxLength Then
     descript_str = Left(descript_str, maxLength) & "..."
