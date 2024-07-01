@@ -11,3 +11,9 @@ How to use
 If you cant find Microsoft Form 2.0 when you try check the dll, download the dll in the web, and import it.
 Download Link:
 https://www.dll-files.com/download/e90c291997deaa27b33a03b64bc8bd88/fm20.dll.html?c=dG9CaHV5N1FYUUx5SU5yQVdoTVlqZz09
+
+How to import?
+Open Excel VBA IDE，Clink Tools → Import Items... → import
+Then select the FM20.dll that is downloaded by the above link.
+
+After import successfully, choice "Microsoft Form 2.0", click OK.
