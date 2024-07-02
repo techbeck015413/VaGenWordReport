@@ -316,12 +316,12 @@ Function ProcessSearchResult(htmlDoc As HTMLDocument, nessusUrl As String) As St
     solution_str = Replace(solution_str, "請注意，", vbCrLf & "請注意，")
     
     ' 判斷 descript_str 是否超過指定長度，若超過則截取
-    Dim maxLength As Integer
-    maxLength = 3000  ' 設定你希望的最大字數
+    ' Dim maxLength As Integer
+    ' maxLength = 3000  ' 設定你希望的最大字數
 
-    If Len(descript_str) > maxLength Then
-    descript_str = Left(descript_str, maxLength) & "..."
-    End If
+    ' If Len(descript_str) > maxLength Then
+    ' descript_str = Left(descript_str, maxLength) & "..."
+    ' End If
     
     ' 組合文字
     Dim additionalText As String
